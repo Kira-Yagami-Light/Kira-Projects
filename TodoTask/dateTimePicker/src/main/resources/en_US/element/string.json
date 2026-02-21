@@ -1,0 +1,12 @@
+{
+  "string": [
+    {
+      "name": "cancel",
+      "value": "Cancel"
+    },
+    {
+      "name": "confirm",
+      "value": "Confirm"
+    }
+  ]
+}

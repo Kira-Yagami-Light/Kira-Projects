@@ -1,0 +1,220 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "待办任务"
+    },
+    {
+      "name": "tab0",
+      "value": "任务清单"
+    },
+    {
+      "name": "tab1",
+      "value": "新增任务"
+    },
+    {
+      "name": "tab2",
+      "value": "设置"
+    },
+    {
+      "name": "app_information",
+      "value": "应用信息"
+    },
+    {
+      "name": "operation_guide",
+      "value": "操作引导"
+    },
+    {
+      "name": "good_morning",
+      "value": "早上好！"
+    },
+    {
+      "name": "good_midday",
+      "value": "中午好！"
+    },
+    {
+      "name": "good_afternoon",
+      "value": "下午好！"
+    },
+    {
+      "name": "good_evening",
+      "value": "晚上好！"
+    },
+    {
+      "name": "select_category_type",
+      "value": "选择清单分类"
+    },
+    {
+      "name": "new",
+      "value": "新建"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "select_date",
+      "value": "选择日期时间"
+    },
+    {
+      "name": "selected_date",
+      "value": "当前选择: "
+    },
+    {
+      "name": "confirm",
+      "value": "确定"
+    },
+    {
+      "name": "add_new_category",
+      "value": "添加新清单"
+    },
+    {
+      "name": "category_name",
+      "value": "清单名称"
+    },
+    {
+      "name": "choose_category_color",
+      "value": "选择清单颜色"
+    },
+    {
+      "name": "category_name_not_null",
+      "value": "清单名称不能为空"
+    },
+    {
+      "name": "task_name",
+      "value": "任务名称"
+    },
+    {
+      "name": "detailed_content",
+      "value": "详细内容"
+    },
+    {
+      "name": "description",
+      "value": "当前为Demo版本，更多新功能敬请期待"
+    },
+    {
+      "name": "guide1",
+      "value": "欢迎使用待办任务！"
+    },
+    {
+      "name": "guide2",
+      "value": "新建任务，命名任务/起始截止/详细描述一站式完成！"
+    },
+    {
+      "name": "guide3",
+      "value": "任务缓急，自动排序"
+    },
+    {
+      "name": "guide4",
+      "value": "过期、无用任务直接删除，井井有条"
+    },
+    {
+      "name": "guide5",
+      "value": "让我们开始吧！"
+    },
+    {
+      "name": "start",
+      "value": "开始使用"
+    },
+    {
+      "name": "new_task",
+      "value": "新建任务"
+    },
+    {
+      "name": "please_text_input",
+      "value": "请输入任务名称"
+    },
+    {
+      "name": "ddl_must_later",
+      "value": "截止时间必须晚于开始时间"
+    },
+    {
+      "name": "insert_fail",
+      "value": "数据库写入失败"
+    },
+    {
+      "name": "save",
+      "value": "保存"
+    },
+    {
+      "name": "task_input",
+      "value": "输入任务名称"
+    },
+    {
+      "name": "category_type",
+      "value": "清单分类"
+    },
+    {
+      "name": "plus_new",
+      "value": "+ 新建"
+    },
+    {
+      "name": "time_arrangement",
+      "value": "时间安排"
+    },
+    {
+      "name": "start_time",
+      "value": "开始时间"
+    },
+    {
+      "name": "due_time",
+      "value": "截止时间"
+    },
+    {
+      "name": "detailed_description",
+      "value": "详细描述"
+    },
+    {
+      "name": "add_detailed_description",
+      "value": "添加详细描述（可选）"
+    },
+    {
+      "name": "not_found",
+      "value": "没有找到匹配的任务"
+    },
+    {
+      "name": "not_available",
+      "value": "暂无待办任务"
+    },
+    {
+      "name": "click_to_create",
+      "value": "点击底部 + 按钮创建新任务"
+    },
+    {
+      "name": "edit_task",
+      "value": "编辑任务"
+    },
+    {
+      "name": "todo_task",
+      "value": "待办任务"
+    },
+    {
+      "name": "search_for_task",
+      "value": "搜索任务"
+    },
+    {
+      "name": "select_start_time",
+      "value": "选择开始时间"
+    },
+    {
+      "name": "select_due_time",
+      "value": "选择截止时间"
+    },
+    {
+      "name": "clear",
+      "value": "清空"
+    },
+    {
+      "name": "task_detail",
+      "value": "任务详情"
+    }
+  ]
+}

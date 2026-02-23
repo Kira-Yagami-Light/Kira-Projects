@@ -1,0 +1,10 @@
+{
+  "src": [
+    "pages/MainPage",
+    "pages/FirstPage",
+    "pages/Community",
+    "pages/Favourite",
+    "pages/Mine",
+    "pages/Play"
+  ]
+}

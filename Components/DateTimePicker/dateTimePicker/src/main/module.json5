@@ -1,0 +1,23 @@
+{
+  "module": {
+    "name": "dateTimePicker",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ],
+    "abilities": [
+      {
+        "name": "DateTimePickerAbility",
+        "srcEntry": "./ets/datetimepickerability/DateTimePickerAbility.ets",
+        "description": "$string:DateTimePickerAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:DateTimePickerAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true
+      }
+    ]
+  }
+}

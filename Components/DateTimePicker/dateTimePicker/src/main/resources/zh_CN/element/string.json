@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "confirm",
+      "value": "保存"
+    },
+    {
+      "name": "start",
+      "value": "开始"
+    }
+  ]
+}

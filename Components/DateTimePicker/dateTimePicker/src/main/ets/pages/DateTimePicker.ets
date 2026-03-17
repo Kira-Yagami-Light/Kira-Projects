@@ -60,7 +60,16 @@ export struct DateTimePicker {
 
   aboutToAppear(): void {
     DATE_TIME_RANGE.setYearRange(this.data.startYear, this.data.endYear);
+    // 如果传入了selectedDate，使用它；否则使用当前时间
     this.selectDate = this.data.selectedDate ?? this.selectDate;
+
+    // 重新计算基于selectedDate的年月日
+    this.currentYear = this.selectDate.getFullYear();
+    this.currentMonth = this.selectDate.getMonth() + 1;
+    this.currentDay = this.selectDate.getDate();
+    this.monthIndex = this.selectDate.getMonth();
+    this.dayIndex = this.selectDate.getDate() - 1;
+
     this.onChangedOption();
   }
 

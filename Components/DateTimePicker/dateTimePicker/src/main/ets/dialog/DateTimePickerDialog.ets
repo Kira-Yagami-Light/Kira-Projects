@@ -3,14 +3,14 @@ import { DateTimePickerParam, TimeFormat } from '../model/PickerInterface';
 import { DateTimePicker } from '../pages/DateTimePicker';
 
 interface DateTimePickerDialogConfig {
-  context: UIContext
-  content: ComponentContent<ESObject>
+  context: UIContext;
+  content: ComponentContent<ESObject>;
 }
 
 interface DateTimePickerDialogParam {
-  txt: ResourceStr
-  node: number
-  param: DateTimePickerParam
+  txt: ResourceStr;
+  node: number;
+  param: DateTimePickerParam;
 }
 
 let mapContext: Map<number, DateTimePickerDialogConfig> = new Map();

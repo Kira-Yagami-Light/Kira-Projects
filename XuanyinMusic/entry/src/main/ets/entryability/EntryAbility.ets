@@ -3,8 +3,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import AVPlayerManager from '../utils/AVPlayerManager';
 import AVSessionManager from '../utils/AVSessionManager';
-import { SONG_KEY } from '../constants/MusicConstants';
-import SongManager from '../utils/SongManager';
 
 export default class EntryAbility extends UIAbility {
   onCreate(): void {
@@ -32,9 +30,6 @@ export default class EntryAbility extends UIAbility {
         AVPlayerManager.uiContext = uiContext;
         await AVPlayerManager.init();
         AVSessionManager.init(this.context);
-        SongManager.context = this.context;
-        AVPlayerManager.currentSong = await SongManager.getSong(); // 获去缓存的音乐
-        AppStorage.setOrCreate(SONG_KEY, AVPlayerManager.currentSong); // 更新到全局状态
       });
   }
 

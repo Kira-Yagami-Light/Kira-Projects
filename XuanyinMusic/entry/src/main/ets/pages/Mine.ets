@@ -189,8 +189,8 @@ struct Mine {
 
   build() {
     Column() {
-      this.personalInformation()
-      this.songListShow()
+      this.personalInformation();
+      this.songListShow();
     }
     .width('100%')
     .height('100%')

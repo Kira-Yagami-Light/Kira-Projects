@@ -8,7 +8,6 @@ import Favourite from './Favourite';
 import { PlayerNav } from '../components/PlayerNav';
 import { PlayStateType } from '../models/PlayState';
 import AVPlayerManager from '../utils/AVPlayerManager';
-import SongManager from '../utils/SongManager';
 
 @Entry
 @Component
@@ -26,7 +25,6 @@ struct HomeIndex {
     AVPlayerManager.currentSong.playList = [];
     AVPlayerManager.currentSong.playIndex = 0;
     AppStorage.setOrCreate<PlayStateType>(SONG_KEY, AVPlayerManager.currentSong);
-    SongManager.updateSong(JSON.stringify(AVPlayerManager.currentSong));
   }
 
   @Builder

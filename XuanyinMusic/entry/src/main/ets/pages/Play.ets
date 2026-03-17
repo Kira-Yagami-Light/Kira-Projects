@@ -370,7 +370,8 @@ struct Play {
         List({ scroller: this.lyricListScroller }) {
           // 顶部留白
           ListItem() {
-            Column().height(80)
+            Column()
+              .height(80)
           }
 
           ForEach(this.lyrics, (line: LyricLine, idx: number) => {
@@ -418,7 +419,8 @@ struct Play {
           })
           // 底部留白
           ListItem() {
-            Column().height(80)
+            Column()
+              .height(80)
           }
         }
         .scrollBar(BarState.Off)
@@ -518,9 +520,11 @@ struct Play {
 
       Row() {
         Text(this.number2time(this.playState.time))
-          .fontSize(12).fontColor('#A5B4B1')
+          .fontSize(12)
+          .fontColor('#A5B4B1')
         Text(this.number2time(this.playState.duration))
-          .fontSize(12).fontColor('#A5B4B1')
+          .fontSize(12)
+          .fontColor('#A5B4B1')
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -585,17 +589,17 @@ struct Play {
       .height('100%')
 
       Column() {
-        this.headBuilder()
+        this.headBuilder();
         // 唱盘/歌词 左右滑动切换（Swiper）
         // 左页：唱盘，右页：歌词
         Swiper() {
           Column() {
-            this.vinylPlayer()
+            this.vinylPlayer();
           }
           .width('100%')
 
           Column() {
-            this.lyricView()
+            this.lyricView();
           }
           .width('100%')
         }
@@ -612,9 +616,9 @@ struct Play {
 
         // 歌曲信息、操作、进度控制
         Column() {
-          this.songInformation()
-          this.songOperation()
-          this.playerControls()
+          this.songInformation();
+          this.songOperation();
+          this.playerControls();
         }
         .width('100%')
         .layoutWeight(1)
@@ -648,7 +652,8 @@ struct Play {
               Text(`播放列表 (${this.playState.playList?.length})`)
                 .fontColor(Color.White)
                 .fontSize(14)
-            }.layoutWeight(1)
+            }
+            .layoutWeight(1)
 
             Image($r('app.media.ic_close'))
               .fillColor('#ffa49a9a')

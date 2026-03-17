@@ -4,7 +4,6 @@ import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
 import { SONG_KEY } from '../constants/MusicConstants';
 import { SongItemType } from '../models/Music';
 import { PlayStateType } from '../models/PlayState';
-import SongManager from './SongManager';
 import AVSessionManager from './AVSessionManager';
 import Logger from './Logger';
 import { audio } from '@kit.AudioKit';
@@ -39,6 +38,7 @@ class AVPlayerManager {
     AppStorage.setOrCreate<PlayStateType>(SONG_KEY, AVPlayerManager.currentSong);
 
     // 监听状态
+    
     AVPlayerManager.player.on('stateChange', (state) => {
       switch (state) {
         case 'initialized':
@@ -237,7 +237,6 @@ class AVPlayerManager {
     } catch (e) {
       Logger.error('AVPlayerManager: failed to load rawfile:', e.message);
     }
-    SongManager.updateSong(JSON.stringify(AVPlayerManager.currentSong));
   }
 
   // 从播放列表中移除指定歌曲

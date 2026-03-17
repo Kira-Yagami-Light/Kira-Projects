@@ -388,13 +388,13 @@ struct FirstPage {
 
   build() {
     Column() {
-      this.stickyHeader()
+      this.stickyHeader();
 
       Scroll() {
         Column() {
-          this.songList()
-          this.displayWindow()
-          this.rankList(RANK_LIST)
+          this.songList();
+          this.displayWindow();
+          this.rankList(RANK_LIST);
         }
         .width('100%')
         .backgroundColor('rgb(241, 243, 245)')

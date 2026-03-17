@@ -169,7 +169,6 @@ struct Community {
           .fontSize(13)
           .fontColor($r('app.color.primary_light'))
           .margin({ left: 8 })
-
       } else if (this.refreshState === PullRefreshState.REFRESHING) {
         Image($r('app.media.ic_loading'))
           .width(22)
@@ -362,7 +361,7 @@ struct Community {
 
       // 底部加载指示器
       ListItem() {
-        this.loadMoreIndicator()
+        this.loadMoreIndicator();
       }
     }
     .scrollBar(BarState.Off)
@@ -390,10 +389,10 @@ struct Community {
       .padding({ top: 12, bottom: 12 })
 
       // 刷新指示区（高度动态撑开）
-      this.refreshIndicator()
+      this.refreshIndicator();
 
       // 列表主体
-      this.communityList()
+      this.communityList();
     }
     .height('100%')
     .width('100%')

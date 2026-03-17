@@ -145,8 +145,8 @@ struct Favourite {
   @Builder
   favouriteList() {
     Column() {
-      this.listTopBuilder()
-      this.songList(FAVORITE_LIST.songs)
+      this.listTopBuilder();
+      this.songList(FAVORITE_LIST.songs);
     }
     .backgroundColor('rgb(241, 243, 245)')
     .layoutWeight(1)
@@ -157,8 +157,8 @@ struct Favourite {
   build() {
     Column() {
       Column() {
-        this.introduction()
-        this.favouriteList()
+        this.introduction();
+        this.favouriteList();
       }
       .layoutWeight(1)
     }

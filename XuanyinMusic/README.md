@@ -49,9 +49,8 @@ entry/src/main/ets/
 └── utils 
     ├── AVPlayerManager.ets                // 播放器创建 
     ├── AVSessionManager.ets               // 媒体会话 
-    ├── Logger.ets                         // 日志
-    └── SongManager.ets                    // 歌曲管理
-resources/rawfile/
+    └── Logger.ets                         // 日志
+entry/src/main/resources/rawfile/
 ├── 0001.mp3 / 0001.lrc
 ├── 0002.mp3 / 0002.lrc
 ├── 0003.mp3 / 0003.lrc

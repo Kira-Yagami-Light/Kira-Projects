@@ -30,7 +30,7 @@ function customPicker(picker: PickerClass) {
     .canLoop(picker.option?.isLoop ?? false)
     .visibility(isVisibility(picker.dateIndex, picker.option?.timeFormat))
     .onChange((value: string | string[], index: number | number[]) => {
-      picker.callback(picker.dateIndex, value, index)
+      picker.callback(picker.dateIndex, value, index);
     })
 }
 

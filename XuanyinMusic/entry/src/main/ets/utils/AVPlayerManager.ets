@@ -38,7 +38,7 @@ class AVPlayerManager {
     AppStorage.setOrCreate<PlayStateType>(SONG_KEY, AVPlayerManager.currentSong);
 
     // 监听状态
-    
+
     AVPlayerManager.player.on('stateChange', (state) => {
       switch (state) {
         case 'initialized':
@@ -135,10 +135,6 @@ class AVPlayerManager {
   }
 
   static async startBackgroundTask() {
-    // 当前存在会话则不重复开启后台任务
-    if (AVSessionManager.session?.sessionId) {
-      return;
-    }
     try {
       let wantAgentInfo: wantAgent.WantAgentInfo = {
         wants: [
@@ -158,7 +154,10 @@ class AVPlayerManager {
         want
       );
     } catch (e) {
-      AVPlayerManager.uiContext?.showAlertDialog({ message: e.message });
+      // 9800005: 已有后台任务在运行，忽略
+      if (e?.code !== 9800005) {
+        AVPlayerManager.uiContext?.showAlertDialog({ message: e.message });
+      }
     }
   }
 

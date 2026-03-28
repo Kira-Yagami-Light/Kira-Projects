@@ -1,12 +1,14 @@
 // 首页
 import { DAILY_RECOMMEND, RECOMMEND_LIST, RANK_LIST } from '../constants/MusicConstants';
 import { RecommendDailyType, RecommendListType, RankListType, RankSongItem } from '../models/Music';
+import AVPlayerManager from '../utils/AVPlayerManager';
 
 @Entry
 @Component
 struct FirstPage {
   @State changeValue: string = '';
   @State submitValue: string = '';
+  @StorageLink('hasPlayed') hasPlayed: boolean = false;
 
   @Builder
   stickyHeader() {
@@ -77,7 +79,7 @@ struct FirstPage {
         .alignContent(Alignment.Center)
 
         Row() {
-          Image($r('app.media.icon_play_album'))
+          Image($r("app.media.ic_play_album"))
             .width(24)
             .height(24)
           Text(item.count + '人听过')
@@ -150,7 +152,7 @@ struct FirstPage {
     Column() {
       Column() {
         Row() {
-          Image($r('app.media.icon_song'))
+          Image($r("app.media.ic_song"))
             .width(16)
             .height(16)
             .fillColor($r('sys.color.black'))
@@ -214,9 +216,12 @@ struct FirstPage {
         .alignItems(HorizontalAlign.Start)
         .margin({ top: '30px', bottom: '30px' })
 
-        Image($r('app.media.icon_play_album'))
+        Image($r("app.media.ic_play_album"))
           .width(32)
           .height(32)
+          .onClick(() => {
+            AVPlayerManager.singlePlay(item.songItem);
+          })
       }
       .flexGrow(1)
       .width('100%')
@@ -400,7 +405,9 @@ struct FirstPage {
         .backgroundColor('rgb(241, 243, 245)')
         .justifyContent(FlexAlign.Start)
         .padding({
-          bottom: (AppStorage.get<number>('bottomHeight') ?? 0) + 40
+          bottom: this.hasPlayed
+            ? (AppStorage.get<number>('bottomHeight') ?? 0) + 40
+            : (AppStorage.get<number>('bottomHeight') ?? 0)
         })
       }
       .layoutWeight(1)

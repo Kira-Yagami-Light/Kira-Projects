@@ -32,10 +32,10 @@ struct HomeIndex {
     Column() {
       Row() {
         Image(item.name === this.currentName ? item.iconLight : item.icon)
-          .width(item.name === this.currentName ? 25 : 30)
+          .width(item.name === this.currentName ? 24 : 20)
           .aspectRatio(1)
       }
-      .width(22)
+      .width(item.name === this.currentName ? 24 : 20)
       .aspectRatio(1)
       .borderRadius(22)
       .justifyContent(FlexAlign.Center)
@@ -62,7 +62,7 @@ struct HomeIndex {
               } else if (item.name === 'community') {
                 Community();
               } else if (item.name === 'mine') {
-                Mine({ playState: $playState });
+                Mine();
               } else {
                 Favourite();
               }

@@ -20,7 +20,6 @@
 | 音频焦点   | audioInterrupt 事件处理来电/闹钟打断与恢复                         |
 | 歌词解析   | 自实现 LRC 解析器，支持 `[mm:ss.xx]` 格式，过滤元数据行                 |
 | 状态管理   | AppStorage + @StorageLink 跨组件共享，@Watch 手动同步 @State 字段 |
-| 数据持久化  | Preferences 保存播放状态，退出应用时清空队列                          |
 | 动画     | animateTo 显式动画 + Animator 帧动画驱动唱盘旋转                   |
 
 ## 工程目录
@@ -49,7 +48,7 @@ entry/src/main/ets/
 └── utils 
     ├── AVPlayerManager.ets                // 播放器创建 
     ├── AVSessionManager.ets               // 媒体会话 
-    └── Logger.ets                         // 日志
+    └── Logger.ets                         // 日志工具
 entry/src/main/resources/rawfile/
 ├── 0001.mp3 / 0001.lrc
 ├── 0002.mp3 / 0002.lrc

@@ -289,7 +289,7 @@ struct Community {
       .justifyContent(FlexAlign.Center)
       .padding({ left: 12, right: 12 })
 
-      Image($r('app.media.icon_list_play'))
+      Image($r('app.media.ic_play_album'))
         .width(32)
         .height(32)
         .fillColor($r('sys.color.black'))

@@ -27,4 +27,4 @@ class Logger {
   }
 }
 
-export default new Logger('Rdb', 0xFF00)
+export default new Logger('Rdb', 0xFF00);

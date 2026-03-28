@@ -147,7 +147,7 @@ struct Play {
         this.lyrics = [];
         return;
       }
-      const fileName = currentItem.id + '.lrc';
+      const fileName = currentItem.src.replace(/\.[^.]+$/, '') + '.lrc';
       // getRawFileContent 返回 Uint8Array，用 TextDecoder 转为字符串
       const rawData = ctx.resourceManager.getRawFileContentSync(fileName);
       const lrcText = new util.TextDecoder('utf-8').decodeToString(rawData);
@@ -203,7 +203,7 @@ struct Play {
   @Builder
   headBuilder() {
     Row() {
-      Image($r('app.media.chevron_down'))
+      Image($r("app.media.ic_down"))
         .width(24).height(24)
         .fillColor(Color.White)
         .onClick(() => {
@@ -227,10 +227,8 @@ struct Play {
         .textAlign(TextAlign.Center)
         .padding({ left: 12, right: 12 })
 
-      Image($r('app.media.people_wifi'))
-        .width(26)
-        .height(22)
-        .fillColor(Color.White)
+      Text()
+        .width(24)
     }
     .height(48)
     .margin({ top: AppStorage.get<number>('topHeight') })
@@ -477,14 +475,43 @@ struct Play {
     Row() {
       Image($r('app.media.ic_song_list'))
         .fillColor(Color.White)
-        .width(28)
+        .width(30)
         .onClick(() => {
           this.panelHeight = '100%';
         })
+      Stack() {
+        // 顺序播放
+        if (this.playState.playMode === 'auto') {
+          Image($r('app.media.ic_order'))
+            .fillColor(Color.White)
+            .width(30)
+        } else if (this.playState.playMode === 'repeat') {
+          // 单曲循环
+          Image($r('app.media.ic_repeat'))
+            .fillColor(Color.White)
+            .width(30)
+        } else {
+          // 随机播放
+          Image($r('app.media.ic_random'))
+            .fillColor(Color.White)
+            .width(30)
+        }
+      }
+      .width(30)
+      .height(30)
+      .onClick(() => {
+        const current = AVPlayerManager.currentSong.playMode;
+        if (current === 'auto') {
+          AVPlayerManager.currentSong.playMode = 'repeat';
+        } else if (current === 'repeat') {
+          AVPlayerManager.currentSong.playMode = 'random';
+        } else {
+          AVPlayerManager.currentSong.playMode = 'auto';
+        }
+        AppStorage.setOrCreate<PlayStateType>(SONG_KEY, AVPlayerManager.currentSong);
+      })
+
       Image($r('app.media.ic_download_o'))
-        .fillColor(Color.White)
-        .width(30)
-      Image($r('app.media.ic_sing'))
         .fillColor(Color.White)
         .width(30)
       Image($r('app.media.ic_other'))

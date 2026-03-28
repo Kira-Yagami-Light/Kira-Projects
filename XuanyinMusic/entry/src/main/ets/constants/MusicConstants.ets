@@ -39,40 +39,6 @@ export const TABS_DATA: TabClass[] = [
   }
 ];
 
-// 每日推荐数据
-export const DAILY_RECOMMEND: RecommendDailyType[] = [
-  {
-    img: $r('app.media.ic_img1'),
-    title: '日语',
-    type: '现在就听',
-    song: 'だから僕は音楽を辞めた - ヨルシカ',
-    bottom: 'rgba(0, 0, 0, 0.15)'
-  },
-  {
-    img: $r('app.media.ic_img2'),
-    title: '电音',
-    type: '新歌推荐',
-    song: 'Move Up (Lost Gravity) - Mr. Polska',
-    bottom: 'rgba(0, 0, 0, 0.15)'
-  },
-  {
-    img: $r('app.media.ic_img3'),
-    title: '国语',
-    type: '新歌推荐',
-    song: '零距离的思念 - TINY7',
-    bottom: 'rgba(0, 0, 0, 0.15)'
-  }
-];
-
-// 推荐歌单数据
-export const RECOMMEND_LIST: RecommendListType[] = [
-  { img: $r('app.media.ic_img4'), title: '像蛇一样蹦跳玩耍', count: '43W' },
-  { img: $r('app.media.ic_img5'), title: '向着大海的方向', count: '37W' },
-  { img: $r('app.media.ic_img6'), title: '海风舔舐着肌肤', count: '25W' },
-  { img: $r('app.media.ic_img7'), title: '置身黑暗怎能想你', count: '17W' },
-  { img: $r('app.media.ic_img8'), title: '我们只剩下心', count: '19W' }
-];
-
 // 歌曲列表
 export const SONGS: SongItemType[] = [
   {
@@ -110,6 +76,43 @@ export const SONGS: SongItemType[] = [
     src: '0005.mp3',
     id: '0005'
   }
+];
+
+// 每日推荐数据
+export const DAILY_RECOMMEND: RecommendDailyType[] = [
+  {
+    img: $r('app.media.ic_img1'),
+    title: '日语',
+    type: '现在就听',
+    song: 'だから僕は音楽を辞めた - ヨルシカ',
+    songItem: SONGS[0],
+    bottom: 'rgba(0, 0, 0, 0.15)'
+  },
+  {
+    img: $r('app.media.ic_img2'),
+    title: '电音',
+    type: '新歌推荐',
+    song: 'Move Up (Lost Gravity) - Mr. Polska',
+    songItem: SONGS[1],
+    bottom: 'rgba(0, 0, 0, 0.15)'
+  },
+  {
+    img: $r('app.media.ic_img3'),
+    title: '国语',
+    type: '新歌推荐',
+    song: '零距离的思念 - TINY7',
+    songItem: SONGS[2],
+    bottom: 'rgba(0, 0, 0, 0.15)'
+  }
+];
+
+// 推荐歌单数据
+export const RECOMMEND_LIST: RecommendListType[] = [
+  { img: $r('app.media.ic_img4'), title: '像蛇一样蹦跳玩耍', count: '43W' },
+  { img: $r('app.media.ic_img5'), title: '向着大海的方向', count: '37W' },
+  { img: $r('app.media.ic_img6'), title: '海风舔舐着肌肤', count: '25W' },
+  { img: $r('app.media.ic_img7'), title: '置身黑暗怎能想你', count: '17W' },
+  { img: $r('app.media.ic_img8'), title: '我们只剩下心', count: '19W' }
 ];
 
 // 社区动态歌曲数据
@@ -155,7 +158,7 @@ export const SONGS_COMMENT: SongItemType[] = [
 export const FAVORITE_LIST: FavoriteListType = {
   name: '我喜欢的音乐',
   nickName: '玄酱',
-  avatar: $r('app.media.logo'),
+  avatar: $r('app.media.ic_logo'),
   songs: SONGS
 };
 
@@ -163,35 +166,35 @@ export const FAVORITE_LIST: FavoriteListType = {
 export const MOMENT_LIST: MomentListType[] = [
   {
     author: '云端少女',
-    avatar: $r('app.media.img_user'),
+    avatar: $r("app.media.ic_img_user"),
     content: '日系忧郁系 | ヨルシカ新专必听',
     signature: '用音乐感受世界',
     song: SONGS_COMMENT[0]
   },
   {
     author: '深海回声',
-    avatar: $r('app.media.img_user'),
+    avatar: $r("app.media.ic_img_user"),
     content: '电音节拍 | 跑步必备能量神曲',
     signature: '声音是最美的语言',
     song: SONGS_COMMENT[1]
   },
   {
     author: '晨风独奏',
-    avatar: $r('app.media.img_user'),
+    avatar: $r("app.media.ic_img_user"),
     content: '清晨通勤必备 | 元气满满开启新一天',
     signature: '每天都要充满活力',
     song: SONGS_COMMENT[2]
   },
   {
     author: '蹦蹦跳跳',
-    avatar: $r('app.media.img_user'),
+    avatar: $r("app.media.ic_img_user"),
     content: '萌系旋律 | 舒缓一天的疲劳',
     signature: '二次元爱好者',
     song: SONGS_COMMENT[3]
   },
   {
     author: '霓虹漫步者',
-    avatar: $r('app.media.img_user'),
+    avatar: $r("app.media.ic_img_user"),
     content: '电子氛围 | 永不WASTED',
     signature: '节奏感是一切',
     song: SONGS_COMMENT[4]

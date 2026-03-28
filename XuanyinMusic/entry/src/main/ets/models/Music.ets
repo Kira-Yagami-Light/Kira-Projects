@@ -22,6 +22,7 @@ export interface RecommendDailyType {
   title: string;
   type: string;
   song: string;
+  songItem: SongItemType
   bottom: string;
 }
 
@@ -94,6 +95,7 @@ export class RecommendDailyTypeModel implements RecommendDailyType {
   title: string = '';
   type: string = '';
   song: string = '';
+  songItem: SongItemType = new SongItemTypeModel();
   bottom: string = '';
 
   constructor(model?: RecommendDailyType) {
@@ -102,6 +104,7 @@ export class RecommendDailyTypeModel implements RecommendDailyType {
       this.title = model.title;
       this.type = model.type;
       this.song = model.song;
+      this.songItem = model.songItem;
       this.bottom = model.bottom;
     }
   }

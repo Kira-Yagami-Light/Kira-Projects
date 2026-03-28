@@ -1,6 +1,4 @@
 // 我的页
-import { PlayStateType } from '../models/PlayState';
-
 @Extend(Text)
 function functionText(align: TextAlign) {
   .width(50)
@@ -18,7 +16,6 @@ function functionText(align: TextAlign) {
 @Entry
 @Component
 struct Mine {
-  @Link playState: PlayStateType;
   @State selectedIndex: number = 0;
   columnList: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
   private controller: TabsController = new TabsController();
@@ -50,7 +47,7 @@ struct Mine {
           .width(48)
           .margin({ right: 10 })
         if (isList) {
-          Image($r('app.media.core'))
+          Image($r('app.media.ic_like'))
             .height(16)
             .width(18)
             .margin({ right: 10 })
@@ -71,7 +68,7 @@ struct Mine {
       }
       .width('70%')
 
-      Image($r('app.media.play_fill'))
+      Image($r("app.media.ic_play_fill"))
         .width(20)
         .height(isList ? 20 : 0)
     }
@@ -85,16 +82,17 @@ struct Mine {
     List() {
       if (isFirst) {
         ListItem() {
-          this.playlist($r('app.media.img_cover'), '我喜欢的音乐', '17 首·235 次播放', true);
+          this.playlist($r("app.media.ic_img_cover"), '我喜欢的音乐', '17 首·235 次播放', true);
         }
         .margin(8)
       }
       ForEach(dataSource, (item: number) => {
         ListItem() {
-          this.playlist($r('app.media.img_cover'), '歌单' + item, '17 首·235 次播放', false);
+          this.playlist($r("app.media.ic_img_cover"), '歌单' + item, '17 首·235 次播放', false);
         }
         .margin(8)
       })
+
       ListItem() {
       }
       .height(260)
@@ -106,7 +104,7 @@ struct Mine {
   @Builder
   personalInformation() {
     Column() {
-      Image($r('app.media.head'))
+      Image($r('app.media.ic_img_cover'))
         .height(80)
         .width(80)
         .borderRadius(40)
@@ -115,7 +113,7 @@ struct Mine {
         Text('我的音乐')
           .fontSize(20)
           .fontColor(Color.White)
-        Image($r('app.media.vip'))
+        Image($r("app.media.ic_vip"))
           .width(20)
           .height(20)
           .margin({ left: 3 })

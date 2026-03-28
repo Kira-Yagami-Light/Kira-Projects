@@ -33,7 +33,7 @@ struct Favourite {
   introduction() {
     Column() {
       Row({ space: 12 }) {
-        Image($r('app.media.img_like'))
+        Image($r("app.media.ic_img_like"))
           .width('35%')
           .aspectRatio(1)
           .objectFit(ImageFit.Cover)
@@ -54,8 +54,8 @@ struct Favourite {
       .height('80%')
 
       Row() {
-        this.button($r('app.media.icon_plus'), $r('app.string.add'));
-        this.button($r('app.media.icon_share'), $r('app.string.share'));
+        this.button($r("app.media.ic_plus"), $r('app.string.add'));
+        this.button($r("app.media.ic_share_big"), $r('app.string.share'));
       }
       .width('92%')
       .justifyContent(FlexAlign.SpaceBetween)
@@ -70,7 +70,7 @@ struct Favourite {
   listTopBuilder() {
     Row({ space: 8 }) {
       Row({ space: 8 }) {
-        Image($r('app.media.icon_list_play'))
+        Image($r('app.media.ic_play_album'))
           .width(32)
           .height(32)
         Text(`播放全部 ${FAVORITE_LIST.songs.length}`)
@@ -165,7 +165,7 @@ struct Favourite {
     .width('100%')
     .height('100%')
     .backdropBlur(71)
-    .backgroundImage($r('app.media.img_like'))
+    .backgroundImage($r("app.media.ic_img_like"))
     .backgroundImageSize({ width: '100%', height: '100%' })
     .padding({
       top: AppStorage.get<number>('topHeight')

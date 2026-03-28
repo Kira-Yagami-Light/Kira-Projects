@@ -1,6 +1,7 @@
 import AvSession from '@ohos.multimedia.avsession';
 import { SongItemType } from '../models/Music';
 import AVPlayerManager from './AVPlayerManager';
+import { image } from '@kit.ImageKit';
 import Logger from './Logger';
 
 export default class AVSessionManager {
@@ -15,13 +16,22 @@ export default class AVSessionManager {
   }
 
   static async setAVMetaData(song: SongItemType) {
-    // 防止 session 失效时静默崩溃
     try {
+      // 把 Resource 图片转成 PixelMap，AVSession 才能显示封面
+      const ctx = AVPlayerManager.uiContext?.getHostContext();
+      let pixelMap: image.PixelMap | undefined = undefined;
+      if (ctx) {
+        const resourceMgr = ctx.resourceManager;
+        const rawData = resourceMgr.getMediaContentSync(song.img as Resource);
+        const imageSource = image.createImageSource(rawData.buffer as ArrayBuffer);
+        pixelMap = await imageSource.createPixelMap();
+      }
+
       await AVSessionManager.session.setAVMetadata({
         assetId: song.id,
         title: song.name,
         artist: song.author,
-        mediaImage: song.img.toString(),
+        mediaImage: pixelMap ?? song.img.toString(),
         duration: AVPlayerManager.currentSong.duration
       });
     } catch (e) {

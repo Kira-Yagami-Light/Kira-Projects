@@ -11,8 +11,8 @@ struct AppInformation {
   titleBuilder(title: ResourceStr) {
     Row() {
       Image($r('app.media.ic_back'))
-        .width(32)
-        .height(32)
+        .width(14)
+        .height(28)
         .onClick(() => {
           this.pageInfos.pop();
         })
@@ -41,7 +41,6 @@ struct AppInformation {
     .justifyContent(FlexAlign.Center)
     .backgroundImage($r('app.media.img_information_bg'))
     .backgroundImageSize({ width: '100%', height: '100%' })
-
   }
 
   @Builder

@@ -1,7 +1,6 @@
-import TaskCategoryData from '../common/TaskCategoryData';
-import { TaskListData } from '../common/TaskListData';
-import CommonConstants from '../common/Constants';
-import Logger from '../common/Logger';
+import TaskCategoryData from '../../model/CategoryModel';
+import { TaskListData } from '../../model/TaskModel';
+import {DDLConstants} from '../../common/constants';
 
 @CustomDialog
 export struct TaskDialog {
@@ -32,7 +31,7 @@ export struct TaskDialog {
 
   getDDLColor(): string {
     const state = this.taskItem.getDDLState();
-    const colorMap = CommonConstants.DDL_COLOR;
+    const colorMap = DDLConstants.COLOR_MAP;
     return colorMap.get(state) || '#999999';
   }
 

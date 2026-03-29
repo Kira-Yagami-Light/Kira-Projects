@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
- * Licensed under the Apache License, Version 2.0 (the ""License"");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an ""AS IS"" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 
 import { Constants } from '../common/Constants';
 import {
@@ -77,7 +62,16 @@ export struct DateTimePicker {
 
   aboutToAppear(): void {
     DATE_TIME_RANGE.setYearRange(this.data.startYear, this.data.endYear);
+    // 如果传入了selectedDate，使用它；否则使用当前时间
     this.selectDate = this.data.selectedDate ?? this.selectDate;
+
+    // 🔧 修复：重新计算基于selectedDate的年月日
+    this.currentYear = this.selectDate.getFullYear();
+    this.currentMonth = this.selectDate.getMonth() + Constants.ONE;
+    this.currentDay = this.selectDate.getDate();
+    this.monthIndex = this.selectDate.getMonth();
+    this.dayIndex = this.selectDate.getDate() - Constants.ONE;
+
     this.onChangedOption();
   }
 

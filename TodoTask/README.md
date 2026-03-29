@@ -32,35 +32,51 @@
 │
 ├──entry/src/main/ets                               // 代码区
 │  ├──common
-│  │  ├──Constants.ets                              // 常量数据
-│  │  ├──Logger.ets                                 // 日志工具
-│  │  ├──TaskCategoryData.ets                       // 清单数据
-│  │  └──TaskListData.ets                           // 任务数据
-│  ├──components
-│  │  ├──CategoryListDialog.ets                     // 清单列表弹窗
-│  │  ├──NewCategoryDialog.ets                      // 新建清单弹窗
-│  │  └──TaskDialog.ets                             // 任务弹窗
-│  ├──database
-│  │  ├──CategoryTable.ets                          // 清单表
-│  │  ├──PreferenceDB.ets                           // 首选项数据库
-│  │  ├──TaskDB.ets                                 // 任务数据库
-│  │  └──TaskTable.ets                              // 任务表
+│  │  ├──constants                                  // 常量数据
+│  │  │  ├──AppConstants.ets                        // 应用常量数据
+│  │  │  ├──DatabaseConstants.ets                   // 数据库常量数据
+│  │  │  ├──DDLConstants.ets                        // DDL常量数据
+│  │  │  ├──index.ets                               // 常量数据导出口
+│  │  │  └──UIConstants.ets                         // UI常量数据
+│  │  └──util                                       // 工具
+│  │     └──Logger.ets                              // 日志工具
+│  ├──data
+│  │  ├──database                                   // DAO与管理
+│  │  │  ├──CategoryDao.ets                         // 清单DAO
+│  │  │  ├──DatabaseHelper.ets                      // 单例管理连接
+│  │  │  ├──PreferenceDao.ets                       // 首选项DAO
+│  │  │  └──TaskDao.ets                             // 任务DAO
+│  │  └──repository                                 // Repository
+│  │     ├──CategoryRepository.ets                  // 清单Repository
+│  │     ├──PreferenceRepository.ets                // 首选项Repository
+│  │     └──TaskRepository.ets                      // 任务Repository
 │  ├──entryability
 │  │  └──EntryAbility.ets       
 │  ├──entrybackupablility 
 │  │  └──EntryBackupAbility.ets
-│  └──pages
-│     ├──AppInformation.ets                         // 应用信息页
-│     ├──Guide.ets                                  // 引导页
-│     ├──MainPage.ets                               // 主页
-│     ├──NewTask.ets                                // 新建任务页
-│     ├──Settings.ets                               // 设置页
-│     └──TaskList.ets                               // 人物列表页
+│  ├──model                                         // 数据接口
+│  │  ├──CategoryModel.ets                          // 清单数据
+│  │  ├──DDLDetailModel.ets                         // DDL数据
+│  │  └──TaskModel.ets                              // 任务数据
+│  ├──page                                          // 页面
+│  │  └──MainPage.ets                               // 主页
+│  └──view
+│     ├──components                                 // 组件
+│     │  ├──CategoryListDialog.ets                  // 清单弹窗
+│     │  ├──NewCategoryDialog.ets                   // 新建清单弹窗
+│     │  └──TaskDialog.ets                          // 任务弹窗
+│     ├──settings                                   // 设置
+│     │  ├──AppInformationView.ets                  // 应用信息页
+│     │  ├──GuideView.ets                           // 引导页
+│     │  └──SettingsView.ets                        // 设置页
+│     └──task                                       // 任务
+│        ├──NewTaskView.ets                         // 新建任务页
+│        └──TaskListView.ets                        // 任务列表页
 └──entry/src/main/resources                         // 应用资源目录
 ```
 
 ## Debug日志
 
-| 问题               | 原因                                            |解决                                             |
-|--------------------|-----------------------------------------------|------------------------------------------------|
-| 新建后TaskList不及时刷新 | @Builder 内的条件判断被缓存  <br>而build() 内的条件判断总是响应式的 |把条件判断从 @Builder 移到 build() 中  |
+| 问题               | 原因                                            | 解决                           |
+|------------------|-----------------------------------------------|------------------------------|
+| 新建后TaskList不及时刷新 | @Builder 内的条件判断被缓存  <br>而build() 内的条件判断总是响应式的 | 把条件判断从 @Builder 移到 build() 中 |

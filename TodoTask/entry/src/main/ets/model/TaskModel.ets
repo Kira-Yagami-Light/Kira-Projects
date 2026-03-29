@@ -1,4 +1,5 @@
-import TaskCategoryData from './TaskCategoryData';
+import TaskCategoryData from './CategoryModel';
+import {DDLConstants} from '../common/constants';
 
 export interface TaskData {
   id: number;
@@ -9,7 +10,6 @@ export interface TaskData {
   is_completed: boolean;
   ddl_detail: string;
   category: number;
-  topped: boolean;
 }
 
 export interface State {
@@ -31,7 +31,7 @@ export class TaskListData implements TaskData {
   subject: number = 0;
   task_name: string = '';
   is_completed: boolean = false;
-  ddl_detail: string = '0.3-0.5-0.8';
+  ddl_detail: string = DDLConstants.DEFAULT_THRESHOLDS;
   ddl_state: State = {
     critical: 0.3,
     hard: 0.5,
@@ -40,7 +40,6 @@ export class TaskListData implements TaskData {
   category: number = 1;
   categoryName: string = '';
   categoryColor: string = '#999999';
-  topped: boolean = false;
 
   // Static Factory
   static fromRecord(record: Record<string, number | string | boolean>): TaskListData {
@@ -51,9 +50,8 @@ export class TaskListData implements TaskData {
     item.detail = String(record.detail ?? '');
     item.task_name = String(record.task_name ?? '');
     item.is_completed = Boolean(record.is_completed ?? false);
-    item.ddl_detail = String(record.ddl_detail ?? '0.3-0.5-0.8');
+    item.ddl_detail = String(record.ddl_detail ?? DDLConstants.DEFAULT_THRESHOLDS);
     item.category = Number(record.category ?? 1);
-    item.topped = Boolean(record.topped ?? false);
     item.subject = Number(record.subject ?? 0);
 
     // Reparse the DDL status
@@ -128,17 +126,14 @@ export class TaskListData implements TaskData {
 
   getDDLPer(): number {
     let taskFullTime = this.due_date_stamp - this.start_date_stamp;
-
     if (taskFullTime <= 0) {
       return 0;
     }
-
     let nowTime = new Date().getTime();
     let remainingTime = this.due_date_stamp - nowTime;
     if (remainingTime <= 0) {
       return 0;
     }
-
     let resultPercentage = remainingTime / taskFullTime;
     return Math.min(100, Math.max(0, resultPercentage * 100));
   }

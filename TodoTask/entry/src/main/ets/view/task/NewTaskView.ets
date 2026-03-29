@@ -1,19 +1,19 @@
-import { TaskListData } from '../common/TaskListData';
-import TaskCategoryData from '../common/TaskCategoryData';
-import TaskTable from '../database/TaskTable';
+import { TaskListData } from '../../model/TaskModel';
+import TaskCategoryData from '../../model/CategoryModel';
+import { TaskRepository } from '../../data/repository/TaskRepository';
+import { CategoryRepository } from '../../data/repository/CategoryRepository';
 import NewCategoryDialog from '../components/NewCategoryDialog';
-import CategoryTable from '../database/CategoryTable';
-import Logger from '../common/Logger';
 import { dateTimePickerDialog, TimeFormat } from '@ohos/datetimepicker';
+import { DDLConstants, UIConstants } from '../../common/constants';
+import inputMethod from '@ohos.inputMethod';
 
 @Component
 export default struct NewTask {
   @Link categoryList: TaskCategoryData[];
   @Link taskList: TaskListData[];
-  taskTable!: TaskTable;
-  categoryTable!: CategoryTable;
+  taskRepository!: TaskRepository;
+  categoryRepository!: CategoryRepository;
   onComplete!: () => void;
-
   @State taskName: string = '';
   @State taskDetail: string = '';
   @State startDate: Date = new Date();
@@ -22,9 +22,6 @@ export default struct NewTask {
   @State taskCategoryName: string = '默认清单';
   @State taskCategoryColor: string = '#000000';
   @State tempCategories: TaskCategoryData[] = [];
-
-  private readonly MAX_TASK_NAME_LENGTH = 50;
-  private readonly MAX_DETAIL_LENGTH = 500;
 
   aboutToAppear() {
     this.dueDate = new Date();
@@ -55,15 +52,26 @@ export default struct NewTask {
 
   openStartDateTimePicker() {
     const uiContext = this.getUIContext();
+    // 创建一个新的Date对象，确保日期选择器能正确读取
+    const initialDate = new Date(
+      this.startDate.getFullYear(),
+      this.startDate.getMonth(),
+      this.startDate.getDate(),
+      this.startDate.getHours(),
+      this.startDate.getMinutes(),
+      0,
+      0
+    );
+
     dateTimePickerDialog(
       uiContext,
       {
         data: {
           startYear: 2020,
           endYear: 2030,
-          selectedDate: this.startDate,
+          selectedDate: initialDate,
           resultCb: (date: Date) => {
-            this.startDate = date;
+            this.startDate = new Date(date.getTime());
           }
         },
         option: {
@@ -77,15 +85,26 @@ export default struct NewTask {
 
   openDueDateTimePicker() {
     const uiContext = this.getUIContext();
+    // 创建一个新的Date对象，确保日期选择器能正确读取
+    const initialDate = new Date(
+      this.dueDate.getFullYear(),
+      this.dueDate.getMonth(),
+      this.dueDate.getDate(),
+      this.dueDate.getHours(),
+      this.dueDate.getMinutes(),
+      0,
+      0
+    );
+
     dateTimePickerDialog(
       uiContext,
       {
         data: {
           startYear: 2020,
           endYear: 2030,
-          selectedDate: this.dueDate,
+          selectedDate: initialDate,
           resultCb: (date: Date) => {
-            this.dueDate = date;
+            this.dueDate = new Date(date.getTime());
           }
         },
         option: {
@@ -97,7 +116,7 @@ export default struct NewTask {
     );
   }
 
-  submitTask() {
+  async submitTask() {
     if (this.taskName.trim() === '') {
       this.getUIContext().getPromptAction().showToast({ message: $r('app.string.please_text_input') });
       return;
@@ -108,59 +127,62 @@ export default struct NewTask {
     }
 
     const selectedCategory = this.tempCategories.find(c => c.id === this.taskCategoryID);
+    let finalCategoryId = this.taskCategoryID;
 
     if (selectedCategory && selectedCategory.id < 0) {
-      this.categoryTable.insertData(selectedCategory, (categoryId: number) => {
-        if (categoryId > 0) {
-          selectedCategory.id = categoryId;
-          this.categoryList = [...this.categoryList, selectedCategory];
-          this.tempCategories = this.tempCategories.filter(c => c.id !== -selectedCategory.id);
-
-          this.saveTask(categoryId);
-        }
-      });
-    } else {
-      this.saveTask(this.taskCategoryID);
+      const success = await this.categoryRepository.insertCategory(selectedCategory);
+      if (success) {
+        finalCategoryId = selectedCategory.id;
+        this.categoryList = [...this.categoryList, selectedCategory];
+        this.tempCategories = this.tempCategories.filter(c => c.id !== selectedCategory.id);
+      }
     }
+
+    await this.saveTask(finalCategoryId);
   }
 
-  saveTask(categoryId: number) {
+  async saveTask(categoryId: number) {
     const newTask = new TaskListData();
     newTask.task_name = this.taskName.trim();
     newTask.detail = this.taskDetail.trim();
     newTask.start_date_stamp = this.startDate.getTime();
     newTask.due_date_stamp = this.dueDate.getTime();
     newTask.category = categoryId;
-    newTask.ddl_detail = '0.3-0.5-0.8';
+    newTask.ddl_detail = DDLConstants.DEFAULT_THRESHOLDS;
     newTask.is_completed = false;
-    newTask.topped = false;
 
-    this.taskTable.insertData(newTask, (id: number) => {
-      if (id > 0) {
-        newTask.id = id;
-        newTask.setAll(this.categoryList);
-        this.taskList = [...this.taskList, newTask];
+    const success = await this.taskRepository.insertTask(newTask);
+    if (success) {
+      newTask.setAll(this.categoryList);
+      this.taskList = [...this.taskList, newTask];
 
-        this.getUIContext().getPromptAction().showToast({
-          message: '已保存至 "' + this.taskCategoryName + '"',
-          duration: 2000
-        });
+      this.getUIContext().getPromptAction().showToast({
+        message: '已保存至 "' + this.taskCategoryName + '"',
+        duration: 2000
+      });
 
-        this.resetForm();
+      this.dismissKeyboard();
+      this.resetForm();
 
-        if (this.onComplete) {
-          setTimeout(() => {
-            this.onComplete();
-          }, 300);
-        }
+      if (this.onComplete) {
+        setTimeout(() => {
+          this.onComplete();
+        }, UIConstants.ANIMATION_DURATION_NORMAL);
       }
-    })
+    }
   }
 
   selectCategory(category: TaskCategoryData) {
     this.taskCategoryID = category.id;
     this.taskCategoryName = category.name;
     this.taskCategoryColor = category.color;
+  }
+
+  dismissKeyboard(): void {
+    try {
+      inputMethod.getController().stopInputSession();
+    } catch (err) {
+    }
   }
 
   resetForm(): void {
@@ -199,6 +221,7 @@ export default struct NewTask {
           .backgroundColor('transparent')
           .fontColor('#666')
           .onClick(() => {
+            this.dismissKeyboard();
             this.tempCategories = [];
             if (this.onComplete) {
               this.onComplete();
@@ -235,9 +258,9 @@ export default struct NewTask {
                 .fontSize(14)
                 .fontColor('#666')
 
-              Text(`${this.taskName.length}/${this.MAX_TASK_NAME_LENGTH}`)
+              Text(`${this.taskName.length}/${UIConstants.MAX_TASK_NAME_LENGTH}`)
                 .fontSize(12)
-                .fontColor(this.taskName.length >= this.MAX_TASK_NAME_LENGTH ? '#E84026' : '#999')
+                .fontColor(this.taskName.length >= UIConstants.MAX_TASK_NAME_LENGTH ? '#E84026' : '#999')
                 .margin({ left: 8 })
             }
             .width('100%')
@@ -251,10 +274,10 @@ export default struct NewTask {
               .backgroundColor('#fff')
               .borderRadius(8)
               .fontSize(16)
-              .maxLength(this.MAX_TASK_NAME_LENGTH)
+              .maxLength(UIConstants.MAX_TASK_NAME_LENGTH)
               .onChange((value: string) => {
-                if (value.length > this.MAX_TASK_NAME_LENGTH) {
-                  this.taskName = value.substring(0, this.MAX_TASK_NAME_LENGTH);
+                if (value.length > UIConstants.MAX_TASK_NAME_LENGTH) {
+                  this.taskName = value.substring(0, UIConstants.MAX_TASK_NAME_LENGTH);
                 }
               })
           }
@@ -332,7 +355,12 @@ export default struct NewTask {
                     .fontSize(14)
                     .fontColor('#0A59F7')
                 }
-                .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+                .padding({
+                  left: 12,
+                  right: 12,
+                  top: 8,
+                  bottom: 8
+                })
                 .backgroundColor('#f0f5ff')
                 .borderRadius(8)
                 .onClick(() => {
@@ -359,7 +387,12 @@ export default struct NewTask {
                     .fontSize(14)
                     .fontColor('#E84026')
                 }
-                .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+                .padding({
+                  left: 12,
+                  right: 12,
+                  top: 8,
+                  bottom: 8
+                })
                 .backgroundColor('#fff0f0')
                 .borderRadius(8)
                 .onClick(() => {
@@ -378,9 +411,9 @@ export default struct NewTask {
                 .fontSize(14)
                 .fontColor('#666')
 
-              Text(`${this.taskDetail.length}/${this.MAX_DETAIL_LENGTH}`)
+              Text(`${this.taskDetail.length}/${UIConstants.MAX_TASK_DETAIL_LENGTH}`)
                 .fontSize(12)
-                .fontColor(this.taskDetail.length >= this.MAX_DETAIL_LENGTH ? '#E84026' : '#999')
+                .fontColor(this.taskDetail.length >= UIConstants.MAX_TASK_DETAIL_LENGTH ? '#E84026' : '#999')
                 .margin({ left: 8 })
             }
             .width('100%')
@@ -394,10 +427,10 @@ export default struct NewTask {
               .backgroundColor('#fff')
               .borderRadius(8)
               .fontSize(14)
-              .maxLength(this.MAX_DETAIL_LENGTH)
+              .maxLength(UIConstants.MAX_TASK_DETAIL_LENGTH)
               .onChange((value: string) => {
-                if (value.length > this.MAX_DETAIL_LENGTH) {
-                  this.taskDetail = value.substring(0, this.MAX_DETAIL_LENGTH);
+                if (value.length > UIConstants.MAX_TASK_DETAIL_LENGTH) {
+                  this.taskDetail = value.substring(0, UIConstants.MAX_TASK_DETAIL_LENGTH);
                 }
               })
           }

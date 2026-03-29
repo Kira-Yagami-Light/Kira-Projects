@@ -215,6 +215,10 @@
     {
       "name": "task_detail",
       "value": "任务详情"
+    },
+    {
+      "name": "display_all",
+      "value": "显示全部"
     }
   ]
 }

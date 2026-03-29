@@ -2,7 +2,7 @@
   "routerMap": [
     {
       "name": "Guide",
-      "pageSourceFile": "src/main/ets/pages/Guide.ets",
+      "pageSourceFile": "src/main/ets/view/settings/GuideView.ets",
       "buildFunction": "guidePageBuilder",
       "data": {
         "description": "this is PageOne"
@@ -10,7 +10,7 @@
     },
     {
       "name": "AppInformation",
-      "pageSourceFile": "src/main/ets/pages/AppInformation.ets",
+      "pageSourceFile": "src/main/ets/view/settings/AppInformationView.ets",
       "buildFunction": "appPageBuilder",
       "data": {
         "description": "this is PageOne"

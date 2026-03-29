@@ -1,16 +1,16 @@
-import TaskCategoryData from '../common/TaskCategoryData';
-import CommonConstants from '../common/Constants';
+import TaskCategoryData from '../../model/CategoryModel';
+import {UIConstants} from '../../common/constants';
 
 @CustomDialog
 export default struct NewCategoryDialog {
   @State cateName: string = '';
-  @State cateColor: string = CommonConstants.CATEGORY_COLOR[0];
+  @State cateColor: string = UIConstants.CATEGORY_COLORS[0];
   controller: CustomDialogController;
   confirm: (newCategory: TaskCategoryData) => void = () => {};
 
   aboutToAppear() {
     this.cateName = '';
-    this.cateColor = CommonConstants.CATEGORY_COLOR[0];
+    this.cateColor = UIConstants.CATEGORY_COLORS[0];
   }
 
   @Builder
@@ -62,8 +62,8 @@ export default struct NewCategoryDialog {
       // Color selection list
       Scroll() {
         Row() {
-          ForEach(CommonConstants.CATEGORY_COLOR, (color: string) => {
-            this.ColorItem(color)
+          ForEach(UIConstants.CATEGORY_COLORS, (color: string) => {
+            this.ColorItem(color);
           })
         }
         .padding({ left: 10, right: 10 })
@@ -97,11 +97,9 @@ export default struct NewCategoryDialog {
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.category_name_not_null') });
               return;
             }
-
             let newCate = new TaskCategoryData();
             newCate.name = this.cateName;
             newCate.color = this.cateColor;
-
             this.confirm(newCate);
             this.controller.close();
           })

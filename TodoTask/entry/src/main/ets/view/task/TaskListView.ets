@@ -1,30 +1,26 @@
-import TaskTable from '../database/TaskTable';
-import { TaskListData } from '../common/TaskListData';
-import Logger from '../common/Logger';
+import { TaskRepository } from '../../data/repository/TaskRepository';
+import { CategoryRepository } from '../../data/repository/CategoryRepository';
+import { TaskListData } from '../../model/TaskModel';
+import Logger from '../../common/util/Logger';
 import { TaskDialog } from '../components/TaskDialog';
-import Constants from '../common/Constants';
-import TaskCategoryData from '../common/TaskCategoryData';
-import CategoryTable from '../database/CategoryTable';
+import { DDLConstants, UIConstants } from '../../common/constants';
+import TaskCategoryData from '../../model/CategoryModel';
 import CategoryListDialog from '../components/CategoryListDialog';
-import NewCategoryDialog from '../components/NewCategoryDialog';
+import inputMethod from '@ohos.inputMethod';
 
 @Component
 export default struct TaskList {
   @Link @Watch('onTaskListChange') taskList: Array<TaskListData>;
-  @Link taskTable: TaskTable;
+  @Link taskRepository: TaskRepository;
   @Link categoryList: TaskCategoryData[];
-  @Link categoryTable: CategoryTable;
+  @Link categoryRepository: CategoryRepository;
   onComplete!: () => void;
-
   @State unfinishedTasks: TaskListData[] = [];
   @State finishedTasks: TaskListData[] = [];
-  @State toppedTasks: TaskListData[] = [];
-
   @State criticalTasks: TaskListData[] = [];
   @State hardTasks: TaskListData[] = [];
   @State mediumTasks: TaskListData[] = [];
   @State easyTasks: TaskListData[] = [];
-
   @State @Watch('onTabChange') currentTab: number = 0;
   @State searchQuery: string = '';
   @State isSearching: boolean = false;
@@ -73,6 +69,7 @@ export default struct TaskList {
     const unfinished = baseTasks.filter((item: TaskListData): boolean => !item.is_completed);
     const finished = baseTasks.filter((item: TaskListData): boolean => item.is_completed);
 
+    unfinished.sort((a, b) => b.id - a.id);
     unfinished.forEach((item: TaskListData): void => {
       item.setCategoryName(this.categoryList);
     });
@@ -84,15 +81,14 @@ export default struct TaskList {
 
     this.unfinishedTasks = [...unfinished];
     this.finishedTasks = [...finished];
-
-    Logger.info('TaskList', `Grouped: ${this.unfinishedTasks.length} unfinished, ${this.finishedTasks.length} finished`);
-
+    Logger.info('TaskList',
+      `Grouped: ${this.unfinishedTasks.length} unfinished, ${this.finishedTasks.length} finished`);
     this.criticalTasks = [...this.unfinishedTasks.filter((t: TaskListData): boolean => t.getDDLState() === 'critical')];
     this.hardTasks = [...this.unfinishedTasks.filter((t: TaskListData): boolean => t.getDDLState() === 'hard')];
     this.mediumTasks = [...this.unfinishedTasks.filter((t: TaskListData): boolean => t.getDDLState() === 'medium')];
     this.easyTasks = [...this.unfinishedTasks.filter((t: TaskListData): boolean => t.getDDLState() === 'easy')];
-
-    Logger.info('TaskList', `Priority: C=${this.criticalTasks.length}, H=${this.hardTasks.length}, M=${this.mediumTasks.length}, E=${this.easyTasks.length}`);
+    Logger.info('TaskList',
+      `Priority: C=${this.criticalTasks.length}, H=${this.hardTasks.length}, M=${this.mediumTasks.length}, E=${this.easyTasks.length}`);
   }
 
   aboutToAppear() {
@@ -103,6 +99,13 @@ export default struct TaskList {
     this.refreshGroupedTasks();
   }
 
+  dismissKeyboard(): void {
+    try {
+      inputMethod.getController().stopInputSession();
+    } catch (err) {
+    }
+  }
+
   dialogController_view: CustomDialogController = new CustomDialogController({
     builder: TaskDialog({
       taskItem: $taskItem,
@@ -111,46 +114,22 @@ export default struct TaskList {
     alignment: DialogAlignment.Bottom,
     customStyle: true
   })
-
   dialogCategoryList: CustomDialogController = new CustomDialogController({
     builder: CategoryListDialog({
       categoryList: $categoryList,
-      categoryTable: $categoryTable,
-      confirm: (selectedCategory: TaskCategoryData) => {
-        this.selectedCategoryId = selectedCategory.id;
-        this.isSearching = true;
-        this.searchQuery = selectedCategory.name;
-        this.refreshGroupedTasks();
-      },
-      safeDeleteCheckID: (id) => {
-        for (let i = 0; i < this.taskList.length; ++i) {
-          if (this.taskList[i].category === id) {
-            return false;
-          }
+      categoryRepository: this.categoryRepository,
+      confirm: (selectedCategory: TaskCategoryData | null) => {
+        if (selectedCategory === null) {
+          // 显示全部
+          this.isSearching = false;
+          this.searchQuery = '';
+          this.selectedCategoryId = 0;
+        } else {
+          this.selectedCategoryId = selectedCategory.id;
+          this.isSearching = true;
+          this.searchQuery = selectedCategory.name;
         }
-        return true;
-      },
-      openNewCategoryDialog: () => {
-        this.dialogNewCategory.open();
-      },
-      queryCategory: (id) => {
-        this.queryCategory(id);
-      }
-    }),
-    alignment: DialogAlignment.Center,
-    customStyle: true
-  })
-
-  dialogNewCategory: CustomDialogController = new CustomDialogController({
-    builder: NewCategoryDialog({
-      confirm: (newCategory: TaskCategoryData) => {
-        this.categoryTable.insertData(newCategory, (id: number) => {
-          if (id > 0) {
-            newCategory.id = id;
-            this.categoryList = [...this.categoryList, newCategory];
-            Logger.debug(`Category Added. ID: ${id}, Name: ${newCategory.name}`);
-          }
-        })
+        this.refreshGroupedTasks();
       }
     }),
     alignment: DialogAlignment.Center,
@@ -167,42 +146,31 @@ export default struct TaskList {
     return map[state] || state;
   }
 
-  updateExistingTask(taskData: TaskListData) {
-    this.taskTable.updateData(taskData, () => {
-    })
+  async updateExistingTask(taskData: TaskListData) {
+    await this.taskRepository.updateTask(taskData);
     taskData.setAll(this.categoryList);
     this.taskList = [...this.taskList];
+    this.refreshGroupedTasks();
   }
 
-  deleteSelectedTasks() {
+  async deleteSelectedTasks() {
     if (this.deleteTarget.length === 0) {
       return;
     }
 
-    for (let i = 0; i < this.deleteTarget.length; i++) {
-      let target = this.deleteTarget[i];
-      this.taskTable.deleteData(target, (ret: boolean) => {
-        if (ret) {
-          let idx = this.taskList.indexOf(target);
-          if (idx > -1) {
-            this.taskList.splice(idx, 1);
-          }
-        }
-      })
-    }
-    this.deleteTarget = [];
-  }
+    // 收集要删除的任务ID
+    const idsToDelete = this.deleteTarget.map(task => task.id);
 
-  queryCategory(categoryId: number) {
-    if (categoryId === 0) {
-      this.isSearching = false;
-      this.searchQuery = '';
-      this.selectedCategoryId = 0;
-    } else {
-      this.isSearching = true;
-      this.selectedCategoryId = categoryId;
+    // 从数据库删除
+    for (const id of idsToDelete) {
+      await this.taskRepository.deleteTask(id);
     }
-    this.refreshGroupedTasks();
+
+    // 从列表中移除（使用 ID 比较）
+    this.taskList = this.taskList.filter(task => !idsToDelete.includes(task.id));
+
+    // 清空删除目标
+    this.deleteTarget = [];
   }
 
   @Builder
@@ -224,7 +192,7 @@ export default struct TaskList {
         }
       }
       .onClick(() => {
-        this.getUIContext()?.animateTo({ duration: 200 }, () => {
+        this.getUIContext()?.animateTo({ duration: UIConstants.ANIMATION_DURATION_SHORT }, () => {
           this.currentTab = 0;
         })
       })
@@ -246,7 +214,7 @@ export default struct TaskList {
         }
       }
       .onClick(() => {
-        this.getUIContext()?.animateTo({ duration: 200 }, () => {
+        this.getUIContext()?.animateTo({ duration: UIConstants.ANIMATION_DURATION_SHORT }, () => {
           this.currentTab = 1;
         })
       })
@@ -264,14 +232,17 @@ export default struct TaskList {
         Checkbox()
           .select(item.is_completed)
           .onChange((value: boolean) => {
-            this.getUIContext()?.animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
+            this.getUIContext()?.animateTo({
+              duration: UIConstants.ANIMATION_DURATION_NORMAL,
+              curve: Curve.EaseInOut
+            }, () => {
               item.is_completed = value;
               this.dialogSelectedIndex = this.taskList.indexOf(item);
               this.updateExistingTask(item);
               if (value && this.currentTab === 0) {
                 setTimeout(() => {
                   this.currentTab = 1;
-                }, 300)
+                }, UIConstants.ANIMATION_DURATION_NORMAL)
               }
             })
           })
@@ -297,7 +268,9 @@ export default struct TaskList {
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .width('100%')
-          .decoration({ type: this.deleteTarget.includes(item) ? TextDecorationType.LineThrough : TextDecorationType.None })
+          .decoration({
+            type: this.deleteTarget.includes(item) ? TextDecorationType.LineThrough : TextDecorationType.None
+          })
 
         if (item.detail) {
           Text(item.detail)
@@ -344,7 +317,7 @@ export default struct TaskList {
           })
             .width('100%')
             .height(4)
-            .color(Constants.DDL_COLOR.get(item.getDDLState()) || '#999')
+            .color(DDLConstants.COLOR_MAP.get(item.getDDLState()) || '#999')
             .backgroundColor('#e0e0e0')
             .margin({ top: 6 })
             .opacity(this.deleteTarget.includes(item) ? 0.5 : 1)
@@ -352,33 +325,13 @@ export default struct TaskList {
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
-
-      if (item.topped) {
-        Image($r('app.media.ic_back'))
-          .width(20)
-          .height(20)
-          .fillColor('#FFD700')
-          .margin({ left: 8 })
-      }
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(this.deleteTarget.includes(item) ? '#f5f5f5' : (item.topped ? '#fff8e6' : '#fff'))
     .borderRadius(12)
-    .shadow({ radius: item.topped ? 4 : 0, color: '#FFD70020' })
+    .backgroundColor(this.deleteTarget.includes(item) ? '#f5f5f5' : '#fff')
+    .shadow({ radius: 0, color: '#00000000' })
     .opacity(this.deleteTarget.includes(item) ? 0.6 : 1)
-    .gesture(
-      LongPressGesture()
-        .onAction(() => {
-          if (!this.isEditing) {
-            this.getUIContext()?.animateTo({ duration: 200 }, () => {
-              item.topped = !item.topped;
-              this.dialogSelectedIndex = this.taskList.indexOf(item);
-              this.updateExistingTask(item);
-            })
-          }
-        })
-    )
     .onClick(() => {
       if (!this.isEditing) {
         this.taskItem = item;
@@ -415,7 +368,7 @@ export default struct TaskList {
           .margin({ top: 12 })
         Row() {
           Button() {
-            Image(this.isEditing ? $r('app.media.ic_done') : $r('app.media.ic_trash'))
+            Image(this.isEditing ? $r('app.media.ic_clean') : $r('app.media.ic_trash'))
               .width(24)
               .height(24)
               .fillColor('#333')
@@ -423,7 +376,7 @@ export default struct TaskList {
           .backgroundColor('transparent')
           .margin({ left: 16 })
           .onClick(() => {
-            this.getUIContext()?.animateTo({ duration: 200 }, () => {
+            this.getUIContext()?.animateTo({ duration: UIConstants.ANIMATION_DURATION_SHORT }, () => {
               if (this.isEditing) {
                 this.deleteSelectedTasks();
                 this.taskList = [...this.taskList];
@@ -442,16 +395,21 @@ export default struct TaskList {
 
       Row() {
         Search({ placeholder: $r('app.string.search_for_task'), value: this.searchQuery })
-          .onChange((val) => {
-            this.searchQuery = val;
-            this.selectedCategoryId = 0;
-            this.isSearching = val !== '';
-            this.refreshGroupedTasks();
+          .onChange((val: string) => {
+            // 只处理清空的情况（用户退格删完）
+            if (val === '') {
+              this.searchQuery = '';
+              this.selectedCategoryId = 0;
+              this.isSearching = false;
+              this.refreshGroupedTasks();
+            }
           })
-          .onSubmit((val) => {
+          .onSubmit((val: string) => {
             this.searchQuery = val;
             this.selectedCategoryId = 0;
-            this.isSearching = val !== '';
+            this.isSearching = val.trim() !== '';
+            this.refreshGroupedTasks();
+            this.dismissKeyboard();
           })
           .margin({
             left: 12,
@@ -460,6 +418,21 @@ export default struct TaskList {
             bottom: 8
           })
           .layoutWeight(1)
+
+        Button() {
+          Image($r('app.media.ic_category_list'))  // 过滤图标（需要准备图标）
+            .width(20)
+            .height(20)
+            .fillColor('#666')
+        }
+        .width(40)
+        .height(40)
+        .backgroundColor('#f0f0f0')
+        .borderRadius(20)
+        .margin({ right: 12 })
+        .onClick(() => {
+          this.dialogCategoryList.open(); // ← 打开分类列表
+        })
 
         if (this.isSearching && this.selectedCategoryId > 0) {
           Button($r('app.string.clear'))
@@ -479,7 +452,7 @@ export default struct TaskList {
       .backgroundColor('rgb(241, 243, 245)')
       .visibility(this.isEditing ? Visibility.None : Visibility.Visible)
 
-      this.TabHeader()
+      this.TabHeader();
 
       if (this.currentTab === 0) {
         if ((this.unfinishedTasks?.length || 0) === 0) {
@@ -490,7 +463,7 @@ export default struct TaskList {
               if (this.criticalTasks.length > 0) {
                 Column() {
                   Row() {
-                    Circle().width(8).height(8).fill(Constants.DDL_COLOR.get('critical') || '#E84026')
+                    Circle().width(8).height(8).fill(DDLConstants.COLOR_MAP.get('critical') || '#E84026')
                     Text(`🔴 非常紧急 (${this.criticalTasks.length})`)
                       .fontSize(14)
                       .fontWeight(600)
@@ -498,7 +471,12 @@ export default struct TaskList {
                       .margin({ left: 8 })
                   }
                   .width('100%')
-                  .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+                  .padding({
+                    left: 16,
+                    right: 16,
+                    top: 12,
+                    bottom: 8
+                  })
 
                   List() {
                     ForEach(this.criticalTasks, (item: TaskListData, index: number) => {
@@ -518,7 +496,7 @@ export default struct TaskList {
               if (this.hardTasks.length > 0) {
                 Column() {
                   Row() {
-                    Circle().width(8).height(8).fill(Constants.DDL_COLOR.get('hard') || '#F9A01E')
+                    Circle().width(8).height(8).fill(DDLConstants.COLOR_MAP.get('hard') || '#F9A01E')
                     Text(`🟠 紧急 (${this.hardTasks.length})`)
                       .fontSize(14)
                       .fontWeight(600)
@@ -526,7 +504,12 @@ export default struct TaskList {
                       .margin({ left: 8 })
                   }
                   .width('100%')
-                  .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+                  .padding({
+                    left: 16,
+                    right: 16,
+                    top: 12,
+                    bottom: 8
+                  })
 
                   List() {
                     ForEach(this.hardTasks, (item: TaskListData, index: number) => {
@@ -546,7 +529,7 @@ export default struct TaskList {
               if (this.mediumTasks.length > 0) {
                 Column() {
                   Row() {
-                    Circle().width(8).height(8).fill(Constants.DDL_COLOR.get('medium') || '#F7CE00')
+                    Circle().width(8).height(8).fill(DDLConstants.COLOR_MAP.get('medium') || '#F7CE00')
                     Text(`🟡 还有时间 (${this.mediumTasks.length})`)
                       .fontSize(14)
                       .fontWeight(600)
@@ -554,7 +537,12 @@ export default struct TaskList {
                       .margin({ left: 8 })
                   }
                   .width('100%')
-                  .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+                  .padding({
+                    left: 16,
+                    right: 16,
+                    top: 12,
+                    bottom: 8
+                  })
 
                   List() {
                     ForEach(this.mediumTasks, (item: TaskListData, index: number) => {
@@ -574,7 +562,7 @@ export default struct TaskList {
               if (this.easyTasks.length > 0) {
                 Column() {
                   Row() {
-                    Circle().width(8).height(8).fill(Constants.DDL_COLOR.get('easy') || '#A5D61D')
+                    Circle().width(8).height(8).fill(DDLConstants.COLOR_MAP.get('easy') || '#A5D61D')
                     Text(`🟢 该开始了 (${this.easyTasks.length})`)
                       .fontSize(14)
                       .fontWeight(600)
@@ -582,7 +570,12 @@ export default struct TaskList {
                       .margin({ left: 8 })
                   }
                   .width('100%')
-                  .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+                  .padding({
+                    left: 16,
+                    right: 16,
+                    top: 12,
+                    bottom: 8
+                  })
 
                   List() {
                     ForEach(this.easyTasks, (item: TaskListData, index: number) => {

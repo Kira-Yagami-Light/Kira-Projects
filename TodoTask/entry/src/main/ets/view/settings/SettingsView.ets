@@ -1,4 +1,4 @@
-import { TaskListData } from '../common/TaskListData';
+import { TaskListData } from '../../model/TaskModel';
 
 @Component
 export struct Settings {
@@ -33,7 +33,7 @@ export struct Settings {
       Text(name)
         .fontSize(18)
         .fontColor($r('sys.color.black'))
-      Image($r('app.media.ic_right'))
+      Image($r('app.media.ic_enter'))
         .width(12)
         .height(12)
     }
@@ -58,14 +58,14 @@ export struct Settings {
         this.titleBuilder(getGreeting(this.hour));
         List() {
           ListItem() {
-            this.settingsListItem($r('app.string.app_information'))
+            this.settingsListItem($r('app.string.app_information'));
           }
           .onClick(() => {
             this.pageInfos.pushPathByName('AppInformation', null);
           })
 
           ListItem() {
-            this.settingsListItem($r('app.string.operation_guide'))
+            this.settingsListItem($r('app.string.operation_guide'));
           }
           .onClick(() => {
             this.pageInfos.pushPathByName('Guide', null);
